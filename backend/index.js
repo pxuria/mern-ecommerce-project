@@ -1,5 +1,5 @@
 //packages
-import path from "path";
+// import path from "path";
 import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -19,10 +19,4 @@ app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
 
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
-
-app.listen(port, () => {
-  console.log(`server is running on ${port}`);
-});
+app.listen(port, () => console.log(`Server running on port: ${port}`));
