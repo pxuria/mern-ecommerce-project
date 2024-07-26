@@ -1,8 +1,21 @@
 import express from "express";
+import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
+import {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getCategories,
+  getCategory,
+} from "../controllers/categoryController.js";
 const router = express.Router();
 
-import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware";
+router.route("/").post(authenticate, authorizeAdmin, createCategory);
+router
+  .route("/:categoryId")
+  .put(authenticate, authorizeAdmin, updateCategory)
+  .delete(authenticate, authorizeAdmin, deleteCategory)
+  .get(getCategory);
 
-router.route("/").post(createCategory);
+router.route("/categories").get(getCategories);
 
 export default router;
