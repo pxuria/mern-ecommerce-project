@@ -114,4 +114,13 @@ const getAllProducts = asyncHandler(async (req, res) => {
   }
 });
 
+const addProductReview = asyncHandler(async (req, res) => {
+  try {
+    const { rating, comment } = req.body;
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
+});
+
 export { addProduct, updateProduct, deleteProduct, getProducts, getProduct, getAllProducts };

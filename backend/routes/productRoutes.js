@@ -8,6 +8,7 @@ import {
   getProducts,
   getProduct,
   getAllProducts,
+  addProductReview,
 } from "../controllers/productController.js";
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
@@ -23,5 +24,7 @@ router
   .put(authenticate, authorizeAdmin, formidable(), updateProduct)
   .delete(authenticate, authorizeAdmin, deleteProduct)
   .get(getProduct);
+
+router.route("/:id/reviews").post(authenticate, authorizeAdmin, addProductReview);
 
 export default router;
