@@ -46,7 +46,7 @@ const loginUser = asyncHandler(async (req, res) => {
     if (isPasswordValid) {
       createToken(res, existingUser._id);
 
-      res.status(201).json({
+      res.status(200).json({
         _id: existingUser._id,
         username: existingUser.username,
         email: existingUser.email,
@@ -73,8 +73,13 @@ const logoutCurrentUser = asyncHandler(async (req, res) => {
 });
 
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find();
-  res.status(200).json({ status: "success", data: { users } });
+  try {
+    const users = await User.find();
+    res.status(200).json({ status: "success", results: users.length, data: { users } });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "server error" });
+  }
 });
 
 const getCurrentUserProfile = asyncHandler(async (req, res) => {

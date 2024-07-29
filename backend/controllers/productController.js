@@ -69,4 +69,49 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
-export { addProduct, updateProduct, deleteProduct };
+const getProducts = asyncHandler(async (req, res) => {
+  try {
+    const pageSize = 6;
+    const keyword = req.query.keyword ? { name: { $regex: req.query.keyword, $options: "i" } } : {};
+    const count = await Product.countDocuments({ ...keyword });
+    const products = await Product.find({ ...keyword }).limit(pageSize);
+    res.status(200).json({
+      status: "success",
+      results: products.length,
+      page: 1,
+      pages: Math.ceil(count / pageSize),
+      data: { products },
+      hasMore: false,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "server error" });
+  }
+});
+
+const getProduct = asyncHandler(async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      return res.status(200).json({ status: "success", data: { product } });
+    } else {
+      res.status(404);
+      throw new Error("product not found");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ error: "product not found." });
+  }
+});
+
+const getAllProducts = asyncHandler(async (req, res) => {
+  try {
+    const products = await Product.find({}).populate("category").limit(12).sort({ createdAt: -1 });
+    res.status(200).json({ status: "success", results: products.length, data: { products } });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "server error" });
+  }
+});
+
+export { addProduct, updateProduct, deleteProduct, getProducts, getProduct, getAllProducts };

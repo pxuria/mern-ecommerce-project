@@ -46,7 +46,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
 const getCategories = asyncHandler(async (req, res) => {
   try {
     const categories = await Category.find();
-    res.status(200).json({ status: "success", data: { categories } });
+    res.status(200).json({ status: "success", results: categories.length, data: { categories } });
   } catch (error) {
     console.log(error);
     return res.status(400).json(error.message);
