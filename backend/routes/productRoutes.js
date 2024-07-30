@@ -9,6 +9,8 @@ import {
   getProduct,
   getAllProducts,
   addProductReview,
+  getTopProducts,
+  getNewProducts,
 } from "../controllers/productController.js";
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
@@ -19,12 +21,15 @@ const router = express.Router();
 router.route("/").get(getProducts).post(authenticate, authorizeAdmin, formidable(), addProduct);
 
 router.route("/all-products").get(getAllProducts);
+router.route("/top-products").get(getTopProducts);
+router.route("/new-products").get(getNewProducts);
+
 router
   .route("/:id")
   .put(authenticate, authorizeAdmin, formidable(), updateProduct)
   .delete(authenticate, authorizeAdmin, deleteProduct)
   .get(getProduct);
 
-router.route("/:id/reviews").post(authenticate, authorizeAdmin, addProductReview);
+router.route("/:id/reviews").post(authenticate, authorizeAdmin, checkId, addProductReview);
 
 export default router;
