@@ -4,19 +4,18 @@ import bcrypt from "bcryptjs";
 import createToken from "../utils/craeteToken.js";
 
 const createUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, phoneNumber } = req.body;
 
-  if (!username || !email || !password) {
+  if (!username || !email || !password || !phoneNumber) {
     throw new Error("Please fill all the inputs.");
   }
 
-  // if (userExists) res.status(400).json({ status: "fail", message: "user alreaduy existed" });
   const userExists = await User.findOne({ email });
   if (userExists) res.status(400).send("User already exists");
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
-  const newUser = new User({ username, email, password: hashedPassword });
+  const newUser = new User({ username, email, password: hashedPassword, phoneNumber });
 
   try {
     await newUser.save();
@@ -28,6 +27,7 @@ const createUser = asyncHandler(async (req, res) => {
       email: newUser.email,
       // password: newUser.password,
       isAdmin: newUser.isAdmin,
+      isStoreOwner: newUser.isStoreOwner,
     });
   } catch (error) {
     res.status(400);
@@ -91,6 +91,7 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
       username: user.username,
       email: user.email,
       isAdmin: user.isAdmin,
+      isStoreOwner: user.isStoreOwner,
     });
   } else {
     res.status(404);
@@ -104,6 +105,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
     user.username = req.body.username || user.username;
     user.email = req.body.email || user.email;
     if (req.body.isAdmin) user.isAdmin = req.body.isAdmin;
+    if (req.body.isStoreOwner) user.isStoreOwner = req.body.isStoreOwner;
 
     if (req.body.password) {
       const salt = await bcrypt.genSalt(10);
@@ -118,6 +120,7 @@ const updateCurrentUserProfile = asyncHandler(async (req, res) => {
       username: updatedUser.username,
       email: updatedUser.email,
       isAdmin: updatedUser.isAdmin,
+      isStoreOwner: updatedUser.isStoreOwner,
     });
   } else {
     res.status(404);
@@ -165,6 +168,7 @@ const updateUserById = asyncHandler(async (req, res) => {
     user.email = req.body.email || user.email;
 
     if (req.body.isAdmin) user.isAdmin = Boolean(req.body.isAdmin);
+    if (req.body.isStoreOwner) user.isStoreOwner = Boolean(req.body.isStoreOwner);
 
     const updatedUser = await user.save();
 
@@ -175,6 +179,7 @@ const updateUserById = asyncHandler(async (req, res) => {
         username: updatedUser.username,
         email: updatedUser.email,
         isAdmin: updatedUser.isAdmin,
+        isStoreOwner: updatedUser.isStoreOwner,
       },
     });
   } else {
