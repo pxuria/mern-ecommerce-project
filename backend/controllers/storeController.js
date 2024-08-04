@@ -4,6 +4,8 @@ import Store from "../models/storeModel.js";
 const getAllStores = asyncHandler(async (req, res) => {
   try {
     const stores = await Store.find({});
+    if (!stores.length) return res.status(200).json({ status: "success", data: "there is no stores" });
+
     res.status(200).json({ status: "success", results: stores.length, data: stores });
   } catch (error) {}
   console.log(error);
