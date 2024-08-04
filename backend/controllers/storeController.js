@@ -28,7 +28,10 @@ const createStore = asyncHandler(async (req, res) => {
     const store = new Store({ ...req.body, owner: req.user._id });
     await store.save();
     res.status(201).json({ status: "success ", data: { store } });
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
 });
 
 export { getAllStores, createStore };
