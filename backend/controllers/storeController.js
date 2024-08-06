@@ -1,6 +1,7 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Store from "../models/storeModel.js";
 
+// done
 const getAllStores = asyncHandler(async (req, res) => {
   try {
     const stores = await Store.find({});
@@ -36,4 +37,47 @@ const createStore = asyncHandler(async (req, res) => {
   }
 });
 
-export { getAllStores, createStore };
+// done
+const deleteStore = asyncHandler(async (req, res) => {
+  try {
+    const store = await Store.findById(req.params.storeId);
+
+    if (store) {
+      await Store.deleteOne({ _id: store._id });
+      res.status(200).json({ status: "success", message: "store deleted" });
+    } else {
+      res.status(404);
+      throw new Error("store not found");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
+});
+
+// done
+const getStore = asyncHandler(async (req, res) => {
+  try {
+    const store = await Store.findById(req.params.storeId);
+    if (store) {
+      return res.status(200).json({ status: "success", data: { store } });
+    } else {
+      res.status(404);
+      throw new Error("store not found");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ error: "store not found." });
+  }
+});
+
+const updateStore = asyncHandler(async (req, res) => {
+  try {
+    const { name, address, description, phoneNumber, email, image } = req.body;
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
+});
+
+export { getAllStores, createStore, deleteStore, getStore, updateStore };

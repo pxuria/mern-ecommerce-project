@@ -3,12 +3,22 @@ import asyncHandler from "../middlewares/asyncHandler.js";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
-    const { name, description, brand, category, price, quantity } = req.fields;
+    const { name, store, images, description, brand, category, price, quantity, weigth, length, width } = req.fields;
+
+    if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
 
     // validations
     switch (true) {
       case !name:
         return res.status(400).json({ error: "name is required" });
+      case !store:
+        return res.status(400).json({ error: "store is required" });
+      case !weigth:
+        return res.status(400).json({ error: "weigth is required" });
+      case !length:
+        return res.status(400).json({ error: "length is required" });
+      case !width:
+        return res.status(400).json({ error: "width is required" });
       case !description:
         return res.status(400).json({ error: "description is required" });
       case !brand:
@@ -32,12 +42,22 @@ const addProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   try {
-    const { name, description, brand, category, price, quantity } = req.fields;
+    const { name, images, description, brand, category, price, quantity, weigth, length, width } = req.fields;
+
+    if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
 
     // validations
     switch (true) {
       case !name:
         return res.status(400).json({ error: "name is required" });
+      case !store:
+        return res.status(400).json({ error: "store is required" });
+      case !weigth:
+        return res.status(400).json({ error: "weigth is required" });
+      case !length:
+        return res.status(400).json({ error: "length is required" });
+      case !width:
+        return res.status(400).json({ error: "width is required" });
       case !description:
         return res.status(400).json({ error: "description is required" });
       case !brand:
