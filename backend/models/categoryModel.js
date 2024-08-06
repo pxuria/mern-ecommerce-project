@@ -8,6 +8,7 @@ const categorySchema = new mongoose.Schema({
     unique: true,
     maxLength: 32,
   },
+  products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 });
 
 export default mongoose.model("Category", categorySchema);
