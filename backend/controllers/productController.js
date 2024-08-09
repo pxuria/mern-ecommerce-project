@@ -94,7 +94,7 @@ const getProducts = asyncHandler(async (req, res) => {
     const pageSize = 6;
     const keyword = req.query.keyword ? { name: { $regex: req.query.keyword, $options: "i" } } : {};
     const count = await Product.countDocuments({ ...keyword });
-    const products = await Product.find({ ...keyword }).limit(pageSize);
+    const products = await Product.find({ ...keyword, isConfirmed: true }).limit(pageSize);
     res.status(200).json({
       status: "success",
       results: products.length,

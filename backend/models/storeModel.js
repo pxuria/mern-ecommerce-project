@@ -4,9 +4,9 @@ const storeSchema = mongoose.Schema(
   {
     name: { type: String, trim: true, required: true },
     address: { type: String, required: true, trim: true },
-    description: { type: String, required: true },
+    description: { type: String },
     phoneNumber: { type: Number, required: true },
-    email: { type: String },
+    email: { type: String, unique: true },
     image: { type: String },
     products: [
       {
@@ -14,13 +14,11 @@ const storeSchema = mongoose.Schema(
         ref: "Products",
       },
     ],
-    owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    categories: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-      },
-    ],
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
   { timestamps: true }
 );

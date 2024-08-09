@@ -1,5 +1,6 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Store from "../models/storeModel.js";
+import User from "../models/userModel.js";
 
 // done
 const getAllStores = asyncHandler(async (req, res) => {
@@ -14,9 +15,13 @@ const getAllStores = asyncHandler(async (req, res) => {
 });
 
 const createStore = asyncHandler(async (req, res) => {
-  try {
-    const { name, description, address, phoneNumber } = req.body;
+  const { name, description, address, phoneNumber } = req.body;
+  const userId = req.user._id;
 
+  const existingStore = await Store.findOne({ owner: userId });
+  if (existingStore) return res.status(400).json({ message: "User already owns a store" });
+
+  try {
     // validations
     switch (true) {
       case !name:
@@ -28,9 +33,16 @@ const createStore = asyncHandler(async (req, res) => {
       case !phoneNumber:
         return res.status(400).json({ error: "phoneNumber is required" });
     }
-    const store = new Store({ ...req.body, owner: req.user._id });
+    const store = new Store({ ...req.body, owner: userId });
     await store.save();
-    res.status(201).json({ status: "success ", data: { store } });
+
+    // Update the user with the store reference
+    const user = await User.findById(userId);
+    user.isStoreOwner = true;
+    user.store = store._id;
+    await user.save();
+
+    res.status(201).json({ status: "success ", data: store });
   } catch (error) {
     console.log(error);
     res.status(400).json(error.message);

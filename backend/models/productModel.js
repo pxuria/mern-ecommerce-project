@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 const { ObjectId } = mongoose.Schema;
 
 const reviewSchema = mongoose.Schema(
@@ -20,6 +20,7 @@ const productSchema = mongoose.Schema(
     name: { type: String, required: true, trim: true },
     images: [{ type: String, required: true }],
     brand: { type: String, required: true },
+    isConfirmed: { type: Boolean, default: false },
     quantity: { type: Number, required: true, min: 0 },
     width: { type: Number, min: 0, required: true },
     weight: {
