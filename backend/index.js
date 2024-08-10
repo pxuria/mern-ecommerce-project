@@ -20,6 +20,7 @@ dotenv.config();
 
 const port = process.env.PORT || 3000;
 connectDB();
+
 const app = express();
 app.use(helmet());
 app.use(cors());
@@ -40,3 +41,4 @@ const __dirname = path.resolve();
 app.use("/uploads", express.static(path.join(__dirname + "/uploads")));
 
 app.listen(port, () => console.log(`Server running on port: ${port}`));
+// telario-backend

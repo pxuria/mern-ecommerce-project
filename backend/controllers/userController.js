@@ -92,6 +92,7 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
       email: user.email,
       isAdmin: user.isAdmin,
       isStoreOwner: user.isStoreOwner,
+      store: user.isStoreOwner ? user.store : null,
     });
   } else {
     res.status(404);
