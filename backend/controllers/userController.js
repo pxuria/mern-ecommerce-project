@@ -20,7 +20,7 @@ const createUser = asyncHandler(async (req, res) => {
   const newUser = new User({ username, email, password, phoneNumber, isAdmin });
 
   await newUser.save();
-  createToken(res, newUser._id);
+  const token = createToken(res, newUser._id);
 
   res.status(201).json({
     _id: newUser._id,
@@ -28,6 +28,7 @@ const createUser = asyncHandler(async (req, res) => {
     email: newUser.email,
     isAdmin: newUser.isAdmin,
     isStoreOwner: newUser.isStoreOwner,
+    token,
   });
 });
 
@@ -49,13 +50,14 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 
   try {
-    createToken(res, existingUser._id);
+    const token = createToken(res, existingUser._id);
 
     res.status(200).json({
       _id: existingUser._id,
       username: existingUser.username,
       email: existingUser.email,
       isAdmin: existingUser.isAdmin,
+      token,
     });
   } catch (error) {
     res.status(500);
