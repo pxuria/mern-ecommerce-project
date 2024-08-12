@@ -45,7 +45,8 @@ const createStore = asyncHandler(async (req, res) => {
     res.status(201).json({ status: "success ", data: store });
   } catch (error) {
     console.log(error);
-    res.status(400).json(error.message);
+    res.status(400);
+    throw new Error(error.message);
   }
 });
 
@@ -72,14 +73,15 @@ const getStore = asyncHandler(async (req, res) => {
   try {
     const store = await Store.findById(req.params.storeId);
     if (store) {
-      return res.status(200).json({ status: "success", data: { store } });
+      return res.status(200).json({ status: "success", data: store });
     } else {
       res.status(404);
       throw new Error("store not found");
     }
   } catch (error) {
     console.log(error);
-    res.status(404).json({ error: "store not found." });
+    res.status(400);
+    throw new Error("store not found.");
   }
 });
 
