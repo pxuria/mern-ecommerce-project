@@ -9,8 +9,11 @@ import {
 } from "../controllers/categoryController.js";
 const router = express.Router();
 
-router.route("/").post(authenticate, authorizeAdmin, createCategory);
-router.route("/categories").get(getCategories);
+router
+  .route("/")
+  .post(authenticate, authorizeAdmin, createCategory)
+  .get(getCategories);
+
 router
   .route("/:categoryId")
   .put(authenticate, authorizeAdmin, updateCategory)
