@@ -18,7 +18,7 @@ import checkId from "../middlewares/checkId.js";
 
 const router = express.Router();
 
-router.route("/").get(getProducts).post(authenticate, authorizeAdmin, formidable(), addProduct);
+router.route("/").get(getProducts).post(authenticate, formidable(), addProduct);
 
 router.route("/all-products").get(getAllProducts);
 router.route("/top-products").get(getTopProducts);
@@ -30,6 +30,8 @@ router
   .delete(authenticate, authorizeAdmin, deleteProduct)
   .get(getProduct);
 
-router.route("/:id/reviews").post(authenticate, authorizeAdmin, checkId, addProductReview);
+router
+  .route("/:id/reviews")
+  .post(authenticate, authorizeAdmin, checkId, addProductReview);
 
 export default router;

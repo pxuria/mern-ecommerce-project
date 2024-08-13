@@ -4,9 +4,8 @@ import asyncHandler from "./asyncHandler.js";
 
 const authenticate = asyncHandler(async (req, res, next) => {
   let token;
-
   // read jwt from the jwt cookie
-  token = req.cookies.jwt;
+  token = req.cookies.jwt || req.headers.jwt;
 
   if (token) {
     try {
@@ -18,8 +17,8 @@ const authenticate = asyncHandler(async (req, res, next) => {
       throw new Error("failed authorized, token failed.");
     }
   } else {
-    res.status(401);
-    throw new Error("failed authorized, no token.");
+    res.status(404);
+    throw new Error("token not found.");
   }
 });
 

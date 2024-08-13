@@ -17,14 +17,15 @@ const addProduct = asyncHandler(async (req, res) => {
       store: storeId,
     } = req.fields;
 
-    if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
+    if (!images || images.length === 0)
+      return res
+        .status(400)
+        .json({ message: "at least one image must be provided" });
 
     // validations
     switch (true) {
       case !name:
         return res.status(400).json({ error: "name is required" });
-      case !storeId:
-        return res.status(400).json({ error: "store is required" });
       case !color:
         return res.status(400).json({ error: "color is required" });
       case !Meterage:
@@ -45,9 +46,11 @@ const addProduct = asyncHandler(async (req, res) => {
     await product.save();
 
     // update store
-    const store = await Store.findById(storeId);
-    store.products.push(product);
-    await store.save();
+    if (storeId) {
+      const store = await Store.findById(storeId);
+      store.products.push(product);
+      await store.save();
+    }
 
     res.status(201).json({ status: "success ", data: product });
   } catch (error) {
@@ -58,16 +61,27 @@ const addProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   try {
-    const { name, images, width, color, Meterage, threadType, description, price, category } = req.fields;
+    const {
+      name,
+      images,
+      width,
+      color,
+      Meterage,
+      threadType,
+      description,
+      price,
+      category,
+    } = req.fields;
 
-    if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
+    if (!images || images.length === 0)
+      return res
+        .status(400)
+        .json({ message: "at least one image must be provided" });
 
     // validations
     switch (true) {
       case !name:
         return res.status(400).json({ error: "name is required" });
-      case !storeId:
-        return res.status(400).json({ error: "store is required" });
       case !color:
         return res.status(400).json({ error: "color is required" });
       case !Meterage:
@@ -84,7 +98,11 @@ const updateProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: "threadType is required" });
     }
 
-    const product = await Product.findByIdAndUpdate(req.params.id, { ...req.fields }, { new: true });
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      { ...req.fields },
+      { new: true }
+    );
     await product.save();
     res.json({ status: "success", data: product });
   } catch (error) {
@@ -96,7 +114,9 @@ const updateProduct = asyncHandler(async (req, res) => {
 const deleteProduct = asyncHandler(async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
-    res.status(200).json({ status: "error", message: "product deleted", data: product });
+    res
+      .status(200)
+      .json({ status: "error", message: "product deleted", data: product });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "server error" });
@@ -106,7 +126,9 @@ const deleteProduct = asyncHandler(async (req, res) => {
 const getProducts = asyncHandler(async (req, res) => {
   try {
     const pageSize = 6;
-    const keyword = req.query.keyword ? { name: { $regex: req.query.keyword, $options: "i" } } : {};
+    const keyword = req.query.keyword
+      ? { name: { $regex: req.query.keyword, $options: "i" } }
+      : {};
     const count = await Product.countDocuments({ ...keyword });
     const products = await Product.find({
       ...keyword,
@@ -143,7 +165,10 @@ const getProduct = asyncHandler(async (req, res) => {
 
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find({}).populate("category").limit(100).sort({ createdAt: -1 });
+    const products = await Product.find({})
+      .populate("category")
+      .limit(100)
+      .sort({ createdAt: -1 });
     res.status(200).json({
       status: "success",
       results: products.length,
@@ -161,7 +186,9 @@ const addProductReview = asyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
 
     if (product) {
-      const alreadyReviewed = product.reviews.find((r) => r.user.toString() === req.user._id.toString());
+      const alreadyReviewed = product.reviews.find(
+        (r) => r.user.toString() === req.user._id.toString()
+      );
       if (alreadyReviewed) {
         res.status(400);
         throw new Error("product already reviewed");
@@ -177,10 +204,14 @@ const addProductReview = asyncHandler(async (req, res) => {
       product.reviews.push(review);
       product.numReviews = product.reviews.length;
 
-      product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
+      product.rating =
+        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+        product.reviews.length;
 
       await product.save();
-      res.status(201).json({ status: "success", message: "review added", data: { review } });
+      res
+        .status(201)
+        .json({ status: "success", message: "review added", data: { review } });
     } else {
       res.status(404);
       throw new Error("product not found.");
