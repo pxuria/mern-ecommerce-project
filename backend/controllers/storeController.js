@@ -6,12 +6,18 @@ import User from "../models/userModel.js";
 const getAllStores = asyncHandler(async (req, res) => {
   try {
     const stores = await Store.find({});
-    if (!stores.length) return res.status(200).json({ status: "success", data: "there is no stores" });
+    if (!stores.length)
+      return res
+        .status(200)
+        .json({ status: "success", data: "there is no stores" });
 
-    res.status(200).json({ status: "success", results: stores.length, data: stores });
-  } catch (error) {}
-  console.log(error);
-  res.status(400).json(error.message);
+    res
+      .status(200)
+      .json({ status: "success", results: stores.length, data: stores });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json(error.message);
+  }
 });
 
 const createStore = asyncHandler(async (req, res) => {
@@ -19,7 +25,8 @@ const createStore = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
   const existingStore = await Store.findOne({ owner: userId });
-  if (existingStore) return res.status(400).json({ message: "User already owns a store" });
+  if (existingStore)
+    return res.status(400).json({ message: "User already owns a store" });
 
   try {
     // validations
