@@ -144,10 +144,11 @@ const updateProduct = asyncHandler(async (req, res) => {
 
 const deleteProduct = asyncHandler(async (req, res) => {
   try {
+    console.log(req.params);
     const product = await Product.findByIdAndDelete(req.params.id);
     res
       .status(200)
-      .json({ status: "error", message: "product deleted", data: product });
+      .json({ status: "success", message: "product deleted", data: product });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "server error" });

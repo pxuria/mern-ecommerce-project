@@ -10,7 +10,7 @@ const getAllStores = asyncHandler(async (req, res) => {
     if (!stores.length)
       return res
         .status(200)
-        .json({ status: "success", data: "there is no stores" });
+        .json({ status: "success", message: "there is no stores", data: [] });
 
     res
       .status(200)

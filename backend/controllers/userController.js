@@ -166,12 +166,21 @@ const getUserById = asyncHandler(async (req, res) => {
 
 const updateUserById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { username, email, isStoreOwner } = req.body;
-  const user = await User.findById(id).select("-password");
+  const { username, email, isStoreOwner, password, phoneNumber } = req.body;
+  // const user = await User.findById(id).select("-password");
+  const user = await User.findById(id);
+  const userPassword = bcrypt.compare(password.trim(), user.password);
 
   if (user) {
+    if (userPassword)
+      return res
+        .status(400)
+        .json({ status: "fail", message: "this is your current password" });
+    console.log(user);
     username = username || user.username;
     email = email || user.email;
+    password = password || user.password;
+    phoneNumber = phoneNumber || user.phoneNumber;
 
     if (isStoreOwner) user.isStoreOwner = Boolean(isStoreOwner);
 
@@ -183,6 +192,8 @@ const updateUserById = asyncHandler(async (req, res) => {
         _id: updatedUser._id,
         username: updatedUser.username,
         email: updatedUser.email,
+        password: updatedUser.password,
+        phoneNumber: updatedUser.phoneNumber,
         isAdmin: updatedUser.isAdmin,
         isStoreOwner: updatedUser.isStoreOwner,
       },

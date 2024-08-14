@@ -29,7 +29,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({ storage, fileFilter });
+const upload = multer({
+  storage,
+  fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
 const uploadSingleImage = upload.single("image");
 
 router.post("/", (req, res) => {
@@ -37,9 +41,17 @@ router.post("/", (req, res) => {
     if (err) {
       res.status(400).json({ status: "fail", message: err.message });
     } else if (req.file) {
-      res.status(200).json({ status: "success", message: "image uploaded successfully", image: `/${req.file.path}` });
+      res
+        .status(200)
+        .json({
+          status: "success",
+          message: "image uploaded successfully",
+          image: `/${req.file.path}`,
+        });
     } else {
-      res.status(400).json({ status: "fail", message: "no image file provided" });
+      res
+        .status(400)
+        .json({ status: "fail", message: "no image file provided" });
     }
   });
 });
