@@ -1,6 +1,7 @@
 import Product from "../models/productModel.js";
 import Store from "../models/storeModel.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
+import User from "../models/userModel.js";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
@@ -15,6 +16,7 @@ const addProduct = asyncHandler(async (req, res) => {
       price,
       category,
       store: storeId,
+      owner,
     } = req.fields;
 
     if (!images || images.length === 0)
@@ -42,14 +44,39 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: "threadType is required" });
     }
 
-    const product = new Product({ ...req.fields });
+    // Check for duplicate product by name, store, color, and threadType
+    if (storeId) {
+      const existingProduct = await Product.findOne({
+        name,
+        store: storeId,
+        color,
+        threadType,
+      });
+
+      if (existingProduct)
+        return res.status(400).json({
+          error:
+            "A product with the same name, store, color, and thread type already exists.",
+        });
+    }
+
+    const product = new Product({ ...req.fields, images });
     await product.save();
 
     // update store
     if (storeId) {
       const store = await Store.findById(storeId);
-      store.products.push(product);
+      if (!store) return res.status(404).json({ error: "Store not found" });
+      store.products.push(product._id);
       await store.save();
+    }
+
+    if (owner) {
+      const user = await User.findById(owner);
+      if (!user) return res.status(404).json({ error: "user not found" });
+
+      user.products.push(product._id);
+      await user.save();
     }
 
     res.status(201).json({ status: "success ", data: product });
@@ -98,12 +125,16 @@ const updateProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: "threadType is required" });
     }
 
+    const existingProduct = await Product.findById(req.params.id);
+    if (!existingProduct)
+      return res.status(404).json({ error: "Product not found" });
+
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       { ...req.fields },
-      { new: true }
+      { new: true, runValidators: true }
     );
-    await product.save();
+    // await product.save();
     res.json({ status: "success", data: product });
   } catch (error) {
     console.log(error);

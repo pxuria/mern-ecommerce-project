@@ -26,6 +26,12 @@ const userSchema = mongoose.Schema(
     },
     isStoreOwner: { type: Boolean, default: false },
     store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
+    products: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
   },
   { timestamps: true }
 );

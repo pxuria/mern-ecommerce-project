@@ -77,7 +77,9 @@ const logoutCurrentUser = asyncHandler(async (req, res) => {
 const getAllUsers = asyncHandler(async (req, res) => {
   try {
     const users = await User.find();
-    res.status(200).json({ status: "success", results: users.length, data: { users } });
+    res
+      .status(200)
+      .json({ status: "success", results: users.length, data: { users } });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "server error" });
@@ -95,6 +97,7 @@ const getCurrentUserProfile = asyncHandler(async (req, res) => {
       isAdmin: user.isAdmin,
       isStoreOwner: user.isStoreOwner,
       store: user.isStoreOwner ? user.store : null,
+      products: user.products,
     });
   } else {
     res.status(404);
@@ -153,9 +156,7 @@ const getUserById = asyncHandler(async (req, res) => {
   if (user) {
     res.status(200).json({
       status: "success",
-      data: {
-        user,
-      },
+      data: user,
     });
   } else {
     res.status(404);
