@@ -11,6 +11,7 @@ import {
   addProductReview,
   getTopProducts,
   getNewProducts,
+  getProductsByUser,
 } from "../controllers/productController.js";
 
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
@@ -22,6 +23,7 @@ router.route("/").get(getProducts).post(authenticate, formidable(), addProduct);
 router.route("/all-products").get(getAllProducts);
 router.route("/top-products").get(getTopProducts);
 router.route("/new-products").get(getNewProducts);
+router.route("/my-products/:userId").get(authenticate, getProductsByUser);
 
 router
   .route("/:id")
