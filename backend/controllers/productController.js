@@ -66,7 +66,6 @@ const addProduct = asyncHandler(async (req, res) => {
     // update store
     if (storeId) {
       const store = await Store.findById(storeId);
-      if (!store) return res.status(404).json({ error: "Store not found" });
       store.products.push(product._id);
       await store.save();
     }
@@ -117,8 +116,8 @@ const updateProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: "width is required" });
       case !description:
         return res.status(400).json({ error: "description is required" });
-      case !category:
-        return res.status(400).json({ error: "category is required" });
+      // case !category:
+      //   return res.status(400).json({ error: "category is required" });
       case !price:
         return res.status(400).json({ error: "price is required" });
       case !threadType:

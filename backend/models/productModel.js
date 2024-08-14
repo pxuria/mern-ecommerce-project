@@ -16,7 +16,6 @@ const productSchema = mongoose.Schema(
     store: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Store",
-      required: true,
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,

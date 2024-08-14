@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 import bcrypt from "bcryptjs";
 import createToken from "../utils/craeteToken.js";
+import Product from "../models/productModel.js";
 
 const createUser = asyncHandler(async (req, res) => {
   const { username, email, password, phoneNumber, isAdmin } = req.body;
@@ -168,23 +169,29 @@ const updateUserById = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { username, email, isStoreOwner, password, phoneNumber } = req.body;
   // const user = await User.findById(id).select("-password");
-  const user = await User.findById(id);
-  const userPassword = bcrypt.compare(password.trim(), user.password);
+  const update = {
+    ...(username && { username }),
+    ...(email && { email }),
+    ...(password && { password }),
+    ...(phoneNumber && { phoneNumber }),
+    ...(typeof isStoreOwner !== "undefined" && {
+      isStoreOwner: Boolean(isStoreOwner),
+    }),
+  };
 
-  if (user) {
-    if (userPassword)
-      return res
-        .status(400)
-        .json({ status: "fail", message: "this is your current password" });
-    console.log(user);
-    username = username || user.username;
-    email = email || user.email;
-    password = password || user.password;
-    phoneNumber = phoneNumber || user.phoneNumber;
+  // If the password is being updated, hash it before updating
+  if (password) {
+    const salt = await bcrypt.genSalt(10);
+    update.password = await bcrypt.hash(password, salt);
+  }
 
-    if (isStoreOwner) user.isStoreOwner = Boolean(isStoreOwner);
+  const updatedUser = await User.findByIdAndUpdate(id, update, {
+    new: true,
+    select: "-password",
+  });
 
-    const updatedUser = await user.save();
+  if (updatedUser) {
+    if (password) createToken(res, updatedUser._id);
 
     res.status(200).json({
       status: "success",
@@ -200,7 +207,59 @@ const updateUserById = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(404);
-    throw new Error("user not found.");
+    throw new Error("User not found.");
+  }
+
+  // const user = await User.findById(id);
+
+  // const isUserPassword = await user.matchPassword(password);
+  // console.log(isUserPassword);
+
+  // if (user) {
+  // if (isUserPassword)
+  //   return res
+  //     .status(400)
+  //     .json({ status: "fail", message: "this is your current password" });
+
+  // username = username || user.username;
+  // email = email || user.email;
+  // password = password || user.password;
+  // phoneNumber = phoneNumber || user.phoneNumber;
+
+  // if (isStoreOwner) user.isStoreOwner = Boolean(isStoreOwner);
+
+  // const updatedUser = await user.save();
+  // console.log(updatedUser);
+
+  //   res.status(200).json({
+  //     status: "success",
+  //     data: {
+  //       _id: updatedUser._id,
+  //       username: updatedUser.username,
+  //       email: updatedUser.email,
+  //       password: updatedUser.password,
+  //       phoneNumber: updatedUser.phoneNumber,
+  //       isAdmin: updatedUser.isAdmin,
+  //       isStoreOwner: updatedUser.isStoreOwner,
+  //     },
+  //   });
+  // } else {
+  //   res.status(404);
+  //   throw new Error("user not found.");
+  // }
+});
+
+const getProductsByUserId = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const products = await Product.find({ owner: id });
+
+  if (products)
+    res
+      .status(200)
+      .json({ status: "success", results: products.length, data: products });
+  else {
+    res.status(404);
+    throw new Error("No products found for this user");
   }
 });
 
@@ -214,4 +273,5 @@ export {
   deleteUserById,
   getUserById,
   updateUserById,
+  getProductsByUserId,
 };

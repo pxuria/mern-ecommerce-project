@@ -23,24 +23,26 @@ const getAllStores = asyncHandler(async (req, res) => {
 
 const createStore = asyncHandler(async (req, res) => {
   const { name, description, address, phoneNumber } = req.body;
-  const userId = req.user._id;
+  console.log(req.body);
+  const userId = req.headers.userid;
 
   const existingStore = await Store.findOne({ owner: userId });
   if (existingStore)
     return res.status(400).json({ message: "User already owns a store" });
 
+  // validations
+  switch (true) {
+    case !name:
+      return res.status(400).json({ error: "name is required" });
+    case !description:
+      return res.status(400).json({ error: "description is required" });
+    case !address:
+      return res.status(400).json({ error: "address is required" });
+    case !phoneNumber:
+      return res.status(400).json({ error: "phoneNumber is required" });
+  }
+
   try {
-    // validations
-    switch (true) {
-      case !name:
-        return res.status(400).json({ error: "name is required" });
-      case !description:
-        return res.status(400).json({ error: "description is required" });
-      case !address:
-        return res.status(400).json({ error: "address is required" });
-      case !phoneNumber:
-        return res.status(400).json({ error: "phoneNumber is required" });
-    }
     const store = new Store({ ...req.body, owner: userId });
     await store.save();
 
