@@ -1,4 +1,5 @@
 import asyncHandler from "../middlewares/asyncHandler.js";
+import Product from "../models/productModel.js";
 import Store from "../models/storeModel.js";
 import User from "../models/userModel.js";
 
@@ -101,4 +102,26 @@ const updateStore = asyncHandler(async (req, res) => {
   }
 });
 
-export { getAllStores, createStore, deleteStore, getStore, updateStore };
+const getProductsByStore = asyncHandler(async (req, res) => {
+  const { storeId } = req.params;
+
+  const products = await Product.find({ store: storeId });
+
+  if (products)
+    res
+      .status(200)
+      .json({ status: "success", results: products.length, data: products });
+  else {
+    res.status(404);
+    throw new Error("No products found for this store");
+  }
+});
+
+export {
+  getAllStores,
+  createStore,
+  deleteStore,
+  getStore,
+  updateStore,
+  getProductsByStore,
+};

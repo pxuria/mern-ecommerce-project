@@ -6,6 +6,7 @@ import {
   deleteStore,
   getStore,
   updateStore,
+  getProductsByStore,
 } from "../controllers/storeController.js";
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 
@@ -15,5 +16,7 @@ router
   .get(authenticate, getStore)
   .put(authenticate, updateStore)
   .delete(authenticate, deleteStore);
+
+router.get("/:storeId/products", getProductsByStore);
 
 export default router;
