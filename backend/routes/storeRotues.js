@@ -1,5 +1,4 @@
 import express from "express";
-const router = express.Router();
 import {
   createStore,
   getAllStores,
@@ -10,12 +9,13 @@ import {
 } from "../controllers/storeController.js";
 import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 
+const router = express.Router();
 router.route("/").get(getAllStores).post(authenticate, createStore);
 router
   .route("/:storeId")
   .get(authenticate, getStore)
   .put(authenticate, updateStore)
-  .delete(authenticate, deleteStore);
+  .delete(authenticate, authorizeAdmin, deleteStore);
 
 router.get("/:storeId/products", getProductsByStore);
 

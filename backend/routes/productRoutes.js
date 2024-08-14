@@ -17,7 +17,6 @@ import { authenticate, authorizeAdmin } from "../middlewares/authMiddleware.js";
 import checkId from "../middlewares/checkId.js";
 
 const router = express.Router();
-
 router.route("/").get(getProducts).post(authenticate, formidable(), addProduct);
 
 router.route("/all-products").get(getAllProducts);

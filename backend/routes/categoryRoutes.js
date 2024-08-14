@@ -7,8 +7,8 @@ import {
   getCategories,
   getCategory,
 } from "../controllers/categoryController.js";
-const router = express.Router();
 
+const router = express.Router();
 router
   .route("/")
   .post(authenticate, authorizeAdmin, createCategory)
