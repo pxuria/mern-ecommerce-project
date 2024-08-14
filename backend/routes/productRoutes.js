@@ -26,8 +26,8 @@ router.route("/new-products").get(getNewProducts);
 
 router
   .route("/:id")
-  .put(authenticate, authorizeAdmin, formidable(), updateProduct)
-  .delete(authenticate, authorizeAdmin, deleteProduct)
+  .put(authenticate, formidable(), updateProduct)
+  .delete(authenticate, deleteProduct)
   .get(getProduct);
 
 router
