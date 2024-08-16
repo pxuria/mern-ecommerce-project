@@ -13,7 +13,7 @@ const router = express.Router();
 router.route("/").get(getAllStores).post(authenticate, createStore);
 router
   .route("/:storeId")
-  .get(authenticate, getStore)
+  .get(getStore)
   .put(authenticate, updateStore)
   .delete(authenticate, authorizeAdmin, deleteStore);
 

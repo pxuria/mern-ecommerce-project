@@ -19,10 +19,7 @@ const addProduct = asyncHandler(async (req, res) => {
       owner,
     } = req.fields;
 
-    if (!images || images.length === 0)
-      return res
-        .status(400)
-        .json({ message: "at least one image must be provided" });
+    if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
 
     // validations
     switch (true) {
@@ -55,8 +52,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
       if (existingProduct)
         return res.status(400).json({
-          error:
-            "A product with the same name, store, color, and thread type already exists.",
+          error: "A product with the same name, store, color, and thread type already exists.",
         });
     }
 
@@ -87,22 +83,9 @@ const addProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   try {
-    const {
-      name,
-      images,
-      width,
-      color,
-      Meterage,
-      threadType,
-      description,
-      price,
-      category,
-    } = req.fields;
+    const { name, images, width, color, Meterage, threadType, description, price, category } = req.fields;
 
-    if (!images || images.length === 0)
-      return res
-        .status(400)
-        .json({ message: "at least one image must be provided" });
+    if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
 
     // validations
     switch (true) {
@@ -125,8 +108,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
 
     const existingProduct = await Product.findById(req.params.id);
-    if (!existingProduct)
-      return res.status(404).json({ error: "Product not found" });
+    if (!existingProduct) return res.status(404).json({ error: "Product not found" });
 
     const product = await Product.findByIdAndUpdate(
       req.params.id,
@@ -145,9 +127,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   try {
     console.log(req.params);
     const product = await Product.findByIdAndDelete(req.params.id);
-    res
-      .status(200)
-      .json({ status: "success", message: "product deleted", data: product });
+    res.status(200).json({ status: "success", message: "product deleted", data: product });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "server error" });
@@ -157,9 +137,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 const getProducts = asyncHandler(async (req, res) => {
   try {
     const pageSize = 6;
-    const keyword = req.query.keyword
-      ? { name: { $regex: req.query.keyword, $options: "i" } }
-      : {};
+    const keyword = req.query.keyword ? { name: { $regex: req.query.keyword, $options: "i" } } : {};
     const count = await Product.countDocuments({ ...keyword });
     const products = await Product.find({
       ...keyword,
@@ -198,6 +176,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
   try {
     const products = await Product.find({})
       .populate("category")
+      .populate("owner", "username phoneNumber store")
       .limit(100)
       .sort({ createdAt: -1 });
     res.status(200).json({
@@ -217,9 +196,7 @@ const addProductReview = asyncHandler(async (req, res) => {
     const product = await Product.findById(req.params.id);
 
     if (product) {
-      const alreadyReviewed = product.reviews.find(
-        (r) => r.user.toString() === req.user._id.toString()
-      );
+      const alreadyReviewed = product.reviews.find((r) => r.user.toString() === req.user._id.toString());
       if (alreadyReviewed) {
         res.status(400);
         throw new Error("product already reviewed");
@@ -235,14 +212,10 @@ const addProductReview = asyncHandler(async (req, res) => {
       product.reviews.push(review);
       product.numReviews = product.reviews.length;
 
-      product.rating =
-        product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-        product.reviews.length;
+      product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length;
 
       await product.save();
-      res
-        .status(201)
-        .json({ status: "success", message: "review added", data: { review } });
+      res.status(201).json({ status: "success", message: "review added", data: { review } });
     } else {
       res.status(404);
       throw new Error("product not found.");
@@ -282,10 +255,7 @@ const getProductsByUser = asyncHandler(async (req, res) => {
     const { userId } = req.params;
     const products = await Product.find({ owner: userId });
 
-    if (!products || products.length === 0)
-      return res
-        .status(404)
-        .json({ message: "No products found for this user" });
+    if (!products || products.length === 0) return res.status(404).json({ message: "No products found for this user" });
 
     res.status(200).json({
       status: "success",
