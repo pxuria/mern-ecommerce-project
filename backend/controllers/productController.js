@@ -125,8 +125,20 @@ const updateProduct = asyncHandler(async (req, res) => {
 
 const deleteProduct = asyncHandler(async (req, res) => {
   try {
-    console.log(req.params);
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findById(req.params.id);
+
+    if (!product) return res.status(404).json({ status: "fail", message: "Product not found" });
+
+    if (product.store)
+      await Store.findByIdAndUpdate(product.store, {
+        $pull: { products: product._id },
+      });
+
+    await User.findByIdAndUpdate(product.owner, {
+      $pull: { products: product._id },
+    });
+
+    await Product.findByIdAndDelete(req.params.id);
     res.status(200).json({ status: "success", message: "product deleted", data: product });
   } catch (error) {
     console.log(error);
