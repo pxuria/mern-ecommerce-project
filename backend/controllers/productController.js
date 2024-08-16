@@ -159,7 +159,9 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const getProduct = asyncHandler(async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id)
+      .populate("category")
+      .populate("owner", "username phoneNumber store");
     if (product) {
       return res.status(200).json({ status: "success", data: product });
     } else {
