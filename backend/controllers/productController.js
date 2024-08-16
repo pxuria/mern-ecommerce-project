@@ -159,7 +159,9 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const getProduct = asyncHandler(async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate("category").populate("owner");
+    const product = await Product.findById(req.params.id)
+      .populate("category")
+      .populate("owner", "username phoneNumber store isStoreOwner");
     if (product) {
       return res.status(200).json({ status: "success", data: product });
     } else {
@@ -174,7 +176,11 @@ const getProduct = asyncHandler(async (req, res) => {
 
 const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    const products = await Product.find({}).populate("category").populate("owner").limit(100).sort({ createdAt: -1 });
+    const products = await Product.find({})
+      .populate("category")
+      .populate("owner", "username phoneNumber store isStoreOwner")
+      .limit(100)
+      .sort({ createdAt: -1 });
     res.status(200).json({
       status: "success",
       results: products.length,
