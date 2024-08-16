@@ -41,8 +41,11 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: "threadType is required" });
     }
 
-    // Check for duplicate product by name, store, color, and threadType
     if (storeId) {
+      const store = await Store.findById(storeId);
+      if (!store) return res.status(404).json({ error: "Store not found" });
+
+      // Check for duplicate product by name, store, color, and threadType
       const existingProduct = await Product.findOne({
         name,
         store: storeId,
@@ -56,16 +59,6 @@ const addProduct = asyncHandler(async (req, res) => {
         });
     }
 
-    const product = new Product({ ...req.fields, images });
-    await product.save();
-
-    // update store
-    if (storeId) {
-      const store = await Store.findById(storeId);
-      store.products.push(product._id);
-      await store.save();
-    }
-
     if (owner) {
       const user = await User.findById(owner);
       if (!user) return res.status(404).json({ error: "user not found" });
@@ -73,6 +66,21 @@ const addProduct = asyncHandler(async (req, res) => {
       user.products.push(product._id);
       await user.save();
     }
+
+    const product = new Product({
+      name,
+      images,
+      width,
+      color,
+      Meterage,
+      threadType,
+      description,
+      price,
+      category,
+      store: storeId,
+      owner,
+    });
+    await product.save();
 
     res.status(201).json({ status: "success ", data: product });
   } catch (error) {

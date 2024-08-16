@@ -100,10 +100,10 @@ const updateStore = asyncHandler(async (req, res) => {
 
 const getProductsByStore = asyncHandler(async (req, res) => {
   const { storeId } = req.params;
+  const products = await Product.find({ store: storeId }).populate("store", "name address owner");
 
-  const products = await Product.find({ store: storeId });
-
-  if (products) res.status(200).json({ status: "success", results: products.length, data: products });
+  if (products && products.length > 0)
+    res.status(200).json({ status: "success", results: products.length, data: products });
   else {
     res.status(404);
     throw new Error("No products found for this store");
