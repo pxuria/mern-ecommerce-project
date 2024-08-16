@@ -18,7 +18,7 @@ const getAllStores = asyncHandler(async (req, res) => {
 
 const createStore = asyncHandler(async (req, res) => {
   const { name, description, address, phoneNumber } = req.body;
-  console.log(req.body);
+
   const userId = req.headers.userid;
 
   const existingStore = await Store.findOne({ owner: userId });
