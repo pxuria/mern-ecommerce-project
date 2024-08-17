@@ -1,0 +1,6 @@
+{
+  "app": "telario-black",
+  "port": 5000,
+  "platform": "node",
+  "node": { "mirror": false, "version": "22" }
+}
