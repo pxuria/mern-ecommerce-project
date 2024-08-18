@@ -30,8 +30,8 @@ const addProduct = asyncHandler(async (req, res) => {
     }
 
     if (store) {
-      const store = await Store.findById(store);
-      if (!store) return res.status(404).json({ error: "Store not found" });
+      const userStore = await Store.findById(store);
+      if (!userStore) return res.status(404).json({ error: "Store not found" });
 
       // Check for duplicate product by name, store, color, and threadType
       const existingProduct = await Product.findOne({
@@ -45,8 +45,9 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({
           error: "A product with the same name, store, color, and thread type already exists.",
         });
-      store.products.push(product._id);
-      await store.save();
+      userStore.products.push(product._id);
+      console.log(store);
+      await userStore.save();
     }
 
     const product = new Product({
