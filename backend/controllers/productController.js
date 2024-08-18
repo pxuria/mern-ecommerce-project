@@ -29,6 +29,20 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: "threadType is required" });
     }
 
+    const product = new Product({
+      name,
+      images,
+      width,
+      color,
+      Meterage,
+      threadType,
+      description,
+      price,
+      category,
+      store,
+      owner,
+    });
+
     if (store) {
       const userStore = await Store.findById(store);
       if (!userStore) return res.status(404).json({ error: "Store not found" });
@@ -49,21 +63,6 @@ const addProduct = asyncHandler(async (req, res) => {
       console.log(store);
       await userStore.save();
     }
-
-    const product = new Product({
-      name,
-      images,
-      width,
-      color,
-      Meterage,
-      threadType,
-      description,
-      price,
-      category,
-      store,
-      owner,
-    });
-    console.log(product);
     await product.save();
 
     if (owner) {
