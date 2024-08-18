@@ -74,12 +74,12 @@ const addProduct = asyncHandler(async (req, res) => {
       store: storeId,
       owner,
     });
+    console.log(product);
     await product.save();
 
     if (owner) {
       const user = await User.findById(owner);
       if (!user) return res.status(404).json({ error: "user not found" });
-      console.log(owner);
 
       user.products.push(product._id);
       await user.save();
