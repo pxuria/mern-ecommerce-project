@@ -7,14 +7,9 @@ import User from "../models/userModel.js";
 const getAllStores = asyncHandler(async (req, res) => {
   try {
     const stores = await Store.find({});
-    if (!stores.length)
-      return res
-        .status(200)
-        .json({ status: "success", message: "there is no stores", data: [] });
+    if (!stores.length) return res.status(200).json({ status: "success", message: "there is no stores", data: [] });
 
-    res
-      .status(200)
-      .json({ status: "success", results: stores.length, data: stores });
+    res.status(200).json({ status: "success", results: stores.length, data: stores });
   } catch (error) {
     console.log(error);
     res.status(400).json(error.message);
@@ -27,8 +22,7 @@ const createStore = asyncHandler(async (req, res) => {
   const userId = req.headers.userid;
 
   const existingStore = await Store.findOne({ owner: userId });
-  if (existingStore)
-    return res.status(400).json({ message: "User already owns a store" });
+  if (existingStore) return res.status(400).json({ message: "User already owns a store" });
 
   // validations
   switch (true) {
@@ -125,26 +119,15 @@ const updateStore = asyncHandler(async (req, res) => {
 
 const getProductsByStore = asyncHandler(async (req, res) => {
   const { storeId } = req.params;
-  const products = await Product.find({ store: storeId }).populate(
-    "store",
-    "name address owner"
-  );
+  const products = await Product.find({ store: storeId }).populate("store", "name address owner");
+  console.log(products);
 
-  if (products && products.length > 0)
-    res
-      .status(200)
-      .json({ status: "success", results: products.length, data: products });
+  if (products && products.length >= 0)
+    res.status(200).json({ status: "success", results: products.length, data: products });
   else {
     res.status(404);
     throw new Error("No products found for this store");
   }
 });
 
-export {
-  getAllStores,
-  createStore,
-  deleteStore,
-  getStore,
-  updateStore,
-  getProductsByStore,
-};
+export { getAllStores, createStore, deleteStore, getStore, updateStore, getProductsByStore };
