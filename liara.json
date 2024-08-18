@@ -1,5 +1,5 @@
 {
-  "app": "telario-black",
+  "app": "telario-back",
   "port": 5000,
   "platform": "node",
   "node": { "mirror": false, "version": "22" }
