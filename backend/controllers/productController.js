@@ -5,19 +5,7 @@ import User from "../models/userModel.js";
 
 const addProduct = asyncHandler(async (req, res) => {
   try {
-    const {
-      name,
-      images,
-      width,
-      color,
-      Meterage,
-      threadType,
-      description,
-      price,
-      category,
-      store: storeId,
-      owner,
-    } = req.fields;
+    const { name, images, width, color, Meterage, threadType, description, price, category, store, owner } = req.fields;
 
     if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
 
@@ -41,8 +29,8 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: "threadType is required" });
     }
 
-    if (storeId) {
-      const store = await Store.findById(storeId);
+    if (store) {
+      const store = await Store.findById(store);
       if (!store) return res.status(404).json({ error: "Store not found" });
 
       // Check for duplicate product by name, store, color, and threadType
@@ -71,7 +59,7 @@ const addProduct = asyncHandler(async (req, res) => {
       description,
       price,
       category,
-      store: storeId,
+      store,
       owner,
     });
     console.log(product);

@@ -120,7 +120,8 @@ const updateStore = asyncHandler(async (req, res) => {
 const getProductsByStore = asyncHandler(async (req, res) => {
   const { storeId } = req.params;
   const products = await Product.find({ store: storeId }).populate("store", "name address owner");
-  console.log(products);
+  const products2 = await Product.find({ store: storeId });
+  console.log(products2);
 
   if (products && products.length >= 0)
     res.status(200).json({ status: "success", results: products.length, data: products });
