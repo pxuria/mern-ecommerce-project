@@ -9,17 +9,29 @@ router.get(
     const { query } = req.query;
     console.log(query);
 
-    if (!query) return res.status(400).json({ status: "fail", message: "Search query is required" });
+    if (!query)
+      return res
+        .status(400)
+        .json({ status: "fail", message: "Search query is required" });
 
     try {
       // Find products matching the query
-      const products = await Product.find({ $text: { $search: query } }, { score: { $meta: "textScore" } }).sort({
-        score: { $meta: "textScore" },
-      });
+      const products = await Product.find(
+        { $text: { $search: query } },
+        { score: { $meta: "textScore" } }
+      )
+        .sort({
+          score: { $meta: "textScore" },
+        })
+        .populate("owner", "username email phoneNumber store");
 
-      res.status(200).json({ status: "success", length: products.length, data: products });
+      res
+        .status(200)
+        .json({ status: "success", length: products.length, data: products });
     } catch (error) {
-      res.status(500).json({ status: "fail", message: "Server error occurred" });
+      res
+        .status(500)
+        .json({ status: "fail", message: "Server error occurred" });
     }
   })
 );
