@@ -1,3 +1,4 @@
+import axios from "axios";
 import bcrypt from "bcryptjs";
 import asyncHandler from "../middlewares/asyncHandler.js";
 import Product from "../models/productModel.js";
@@ -276,8 +277,8 @@ const sendOtp = asyncHandler(async (req, res) => {
   // Generate a 4 or 6-digit OTP
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
 
-  // Set OTP expiry to 5 minutes
-  const otpExpiresIn = new Date(Date.now() + 5 * 60 * 1000);
+  // Set OTP expiry to 2 minutes
+  const otpExpiresIn = new Date(Date.now() + 2 * 60 * 1000);
 
   // Update user with the generated OTP and expiry time
   user.otp = otp;
