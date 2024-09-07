@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 
 const userSchema = mongoose.Schema(
   {
@@ -18,7 +18,17 @@ const userSchema = mongoose.Schema(
       required: true,
       min: 8,
     },
-    phoneNumber: { type: String, required: true },
+    phoneNumber: { type: String, required: true, unique: true },
+    otp: {
+      type: String,
+    },
+    otpExpiresIn: {
+      type: Date,
+    },
+    isPhoneVerified: {
+      type: Boolean,
+      default: false,
+    },
     isAdmin: {
       type: Boolean,
       required: true,

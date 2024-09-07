@@ -1,8 +1,8 @@
-import User from "../models/userModel.js";
-import asyncHandler from "../middlewares/asyncHandler.js";
 import bcrypt from "bcryptjs";
-import createToken from "../utils/craeteToken.js";
+import asyncHandler from "../middlewares/asyncHandler.js";
 import Product from "../models/productModel.js";
+import User from "../models/userModel.js";
+import createToken from "../utils/craeteToken.js";
 
 const createUser = asyncHandler(async (req, res) => {
   const { username, email, password, phoneNumber, isAdmin } = req.body;
@@ -78,9 +78,7 @@ const logoutCurrentUser = asyncHandler(async (req, res) => {
 const getAllUsers = asyncHandler(async (req, res) => {
   try {
     const users = await User.find();
-    res
-      .status(200)
-      .json({ status: "success", results: users.length, data: { users } });
+    res.status(200).json({ status: "success", results: users.length, data: { users } });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "server error" });
@@ -253,25 +251,109 @@ const getProductsByUserId = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const products = await Product.find({ owner: id });
 
-  if (products)
-    res
-      .status(200)
-      .json({ status: "success", results: products.length, data: products });
+  if (products) res.status(200).json({ status: "success", results: products.length, data: products });
   else {
     res.status(404);
     throw new Error("No products found for this user");
   }
 });
 
+const sendOtp = asyncHandler(async (req, res) => {
+  const { phoneNumber } = req.body;
+
+  if (!phoneNumber) {
+    res.status(400);
+    throw new Error("Phone number is required.");
+  }
+
+  const user = await User.findOne({ phoneNumber });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found.");
+  }
+
+  // Generate a 4 or 6-digit OTP
+  const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+  // Set OTP expiry to 5 minutes
+  const otpExpiresIn = new Date(Date.now() + 5 * 60 * 1000);
+
+  // Update user with the generated OTP and expiry time
+  user.otp = otp;
+  user.otpExpiresIn = otpExpiresIn;
+  await user.save();
+
+  try {
+    var data = JSON.stringify({
+      mobile: phoneNumber,
+      templateId: 100000,
+      parameters: [
+        {
+          name: "code",
+          value: otp,
+        },
+      ],
+    });
+
+    const headers = {
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.X_API_KEY,
+      },
+    };
+
+    const response = await axios.post("https://api.sms.ir/v1/send/verify", data, headers);
+
+    res.status(200).json({ message: "OTP sent successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to send OTP." });
+  }
+});
+
+const verifyOtp = asyncHandler(async (req, res) => {
+  const { phoneNumber, otp } = req.body;
+
+  const user = await User.findOne({ phoneNumber });
+
+  if (!user) {
+    res.status(404);
+    throw new Error("User not found.");
+  }
+
+  if (user.otp !== otp || user.otpExpiresIn < Date.now()) {
+    res.status(400);
+    throw new Error("Invalid or expired OTP.");
+  }
+
+  // OTP verified, mark user as verified and log them in
+  user.isPhoneVerified = true;
+  user.otp = undefined;
+  user.otpExpiresIn = undefined;
+  await user.save();
+
+  // Generate JWT token for the user
+  const token = createToken(res, user._id);
+
+  res.status(200).json({
+    _id: user._id,
+    phoneNumber: user.phoneNumber,
+    token,
+  });
+});
+
 export {
   createUser,
-  loginUser,
-  logoutCurrentUser,
+  deleteUserById,
   getAllUsers,
   getCurrentUserProfile,
-  updateCurrentUserProfile,
-  deleteUserById,
-  getUserById,
-  updateUserById,
   getProductsByUserId,
+  getUserById,
+  loginUser,
+  logoutCurrentUser,
+  sendOtp,
+  updateCurrentUserProfile,
+  updateUserById,
+  verifyOtp,
 };
