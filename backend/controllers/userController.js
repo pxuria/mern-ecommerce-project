@@ -323,9 +323,14 @@ const verifyOtp = asyncHandler(async (req, res) => {
     throw new Error("User not found.");
   }
 
-  if (user.otp !== otp || user.otpExpiresIn < Date.now()) {
+  if (user.otpExpiresIn < Date.now()) {
     res.status(400);
-    throw new Error("Invalid or expired OTP.");
+    throw new Error("کد نامعتبر است. لطفا دوباره ارسال نمایید.");
+  }
+
+  if (user.otp !== otp) {
+    res.status(400);
+    throw new Error("کد شما با کد ارسال شده تطابق ندارد.");
   }
 
   // OTP verified, mark user as verified and log them in
