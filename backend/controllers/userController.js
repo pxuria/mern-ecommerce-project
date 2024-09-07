@@ -275,7 +275,7 @@ const sendOtp = asyncHandler(async (req, res) => {
   }
 
   // Generate a 4 or 6-digit OTP
-  const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
   // Set OTP expiry to 2 minutes
   const otpExpiresIn = new Date(Date.now() + 2 * 60 * 1000);
