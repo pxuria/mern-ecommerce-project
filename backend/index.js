@@ -1,5 +1,6 @@
 //packages
 import express from "express";
+import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
@@ -13,7 +14,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
-import storeRoutes from "./routes/storeRotues.js";
+import storeRoutes from "./routes/storeRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 
 dotenv.config();
@@ -38,7 +39,12 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/search", searchRoutes);
 
 const __dirname = path.resolve();
-app.use("/uploads", express.static(path.join(__dirname + "/uploads")));
+const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || "/uploads");
+
+if (!fs.existsSync(uploadDir))
+    fs.mkdirSync(uploadDir, { recursive: true });
+
+app.use("/uploads", express.static(uploadDir));
+
 
 app.listen(port, () => console.log(`Server running on port: ${port}`));
-// telario-backend
