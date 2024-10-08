@@ -39,7 +39,7 @@ app.use("/api/upload", uploadRoutes);
 app.use("/api/search", searchRoutes);
 
 const __dirname = path.resolve();
-const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || "/uploads");
+const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || "uploads");
 
 if (!fs.existsSync(uploadDir))
     fs.mkdirSync(uploadDir, { recursive: true });
