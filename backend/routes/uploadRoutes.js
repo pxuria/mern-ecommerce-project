@@ -10,6 +10,11 @@ const router = express.Router();
 const __dirname = path.resolve();
 const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || 'uploads');
 
+import fs from 'fs';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadDir);
@@ -54,19 +59,25 @@ const upload = multer({
 // @route   POST /api/upload/image-uploader
 router.route("/").post((req, res) => {
   upload.array('images', 10)(req, res, (err) => {
-    if (err) {
-      res.status(400).json({ status: "fail", message: err.message })
-    } else if (req.files && req.files.length > 0) {
-      const filePaths = req.files.map(file => `/${file.path}`);
-
-      res.status(201).json({
-        status: "success",
-        message: "images uploaded successfully",
-        images: filePaths
-      });
-    } else {
-      res.status(400).json({ status: "fail", message: "no image files provided" });
+    if (err instanceof multer.MulterError) {
+      // Multer-specific errors
+      return res.status(400).json({ status: "fail", message: err.message });
+    } else if (err) {
+      // Other errors
+      return res.status(400).json({ status: "fail", message: err.message });
     }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ status: "fail", message: "No image files provided" });
+    }
+
+    const filePaths = req.files.map(file => `/uploads/${file.filename}`);
+
+    return res.status(201).json({
+      status: "success",
+      message: "Images uploaded successfully",
+      images: filePaths
+    });
   })
 });
 
