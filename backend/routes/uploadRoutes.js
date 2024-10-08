@@ -9,7 +9,10 @@ dotenv.config();
 const router = express.Router();
 
 const __dirname = path.resolve();
-const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || 'uploads');
+// const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || 'uploads');
+const uploadDir = process.env.UPLOAD_DIR
+  ? path.join(__dirname, process.env.UPLOAD_DIR)
+  : path.join('/tmp', 'uploads');
 
 if (!fs.existsSync(uploadDir))
   fs.mkdirSync(uploadDir, { recursive: true });
