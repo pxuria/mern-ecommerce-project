@@ -28,17 +28,11 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', "multipart/form-data"];
   const allowedExtensions = ['.jpeg', '.jpg', '.png', '.gif'];
 
   const isMimeTypeValid = allowedMimeTypes.includes(file.mimetype);
   const isExtensionValid = allowedExtensions.includes(path.extname(file.originalname).toLowerCase());
-  console.log(`Uploading File: ${file.originalname}`);
-  console.log(`MIME Type: ${file.mimetype}`);
-  console.log(`File Extension: ${path.extname(file.originalname).toLowerCase()}`);
-  console.log(isMimeTypeValid)
-  console.log(isExtensionValid)
-  console.log(file.mimetype)
 
   // const filetypes = /jpe?g|png|webp/;
   // const mimetypes = /image\/jpe?g|image\/png|image\/webp/;
@@ -69,13 +63,16 @@ router.route("/").post((req, res) => {
   upload.array('images', 10)(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       // Multer-specific errors
+      console.log('err 1')
       return res.status(400).json({ status: "fail", message: err.message });
     } else if (err) {
       // Other errors
+      console.log('err 2')
       return res.status(400).json({ status: "fail", message: err.message });
     }
 
     if (!req.files || req.files.length === 0) {
+      console.log('err 3')
       return res.status(400).json({ status: "fail", message: "No image files provided" });
     }
 
