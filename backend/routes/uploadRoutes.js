@@ -2,6 +2,7 @@ import path from "path";
 import express from "express";
 import multer from "multer";
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 dotenv.config();
 
@@ -10,10 +11,9 @@ const router = express.Router();
 const __dirname = path.resolve();
 const uploadDir = path.join(__dirname, process.env.UPLOAD_DIR || 'uploads');
 
-import fs from 'fs';
-if (!fs.existsSync(uploadDir)) {
+if (!fs.existsSync(uploadDir))
   fs.mkdirSync(uploadDir, { recursive: true });
-}
+
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -28,9 +28,14 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedTypes.test(file.mimetype);
+  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+  const allowedExtensions = ['.jpeg', '.jpg', '.png', '.gif'];
+
+  const isMimeTypeValid = allowedMimeTypes.includes(file.mimetype);
+  const isExtensionValid = allowedExtensions.includes(path.extname(file.originalname).toLowerCase());
+  console.log(`Uploading File: ${file.originalname}`);
+  console.log(`MIME Type: ${file.mimetype}`);
+  console.log(`File Extension: ${path.extname(file.originalname).toLowerCase()}`);
 
   // const filetypes = /jpe?g|png|webp/;
   // const mimetypes = /image\/jpe?g|image\/png|image\/webp/;
@@ -38,7 +43,7 @@ const fileFilter = (req, file, cb) => {
   // const extname = path.extname(file.originalname).toLowerCase();
   // const mimetype = file.mimetype;
 
-  if (mimetype && extname)
+  if (isMimeTypeValid && isExtensionValid)
     return cb(null, true);
   else
     cb(new Error('Only images are allowed (jpeg, jpg, png, gif).'));
