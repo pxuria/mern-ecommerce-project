@@ -38,6 +38,7 @@ const fileFilter = (req, file, cb) => {
   console.log(`File Extension: ${path.extname(file.originalname).toLowerCase()}`);
   console.log(isMimeTypeValid)
   console.log(isExtensionValid)
+  console.log(file.mimetype)
 
   // const filetypes = /jpe?g|png|webp/;
   // const mimetypes = /image\/jpe?g|image\/png|image\/webp/;
