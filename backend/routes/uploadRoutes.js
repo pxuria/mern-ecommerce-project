@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', "multipart/form-data"];
+  const allowedMimeTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
   const allowedExtensions = ['.jpeg', '.jpg', '.png', '.gif'];
 
   const isMimeTypeValid = allowedMimeTypes.includes(file.mimetype);

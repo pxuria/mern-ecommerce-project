@@ -7,7 +7,7 @@ const addProduct = asyncHandler(async (req, res) => {
   try {
     const { name, images, width, color, Meterage, threadType, description, price, category, store, owner } = req.fields;
 
-    if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
+    // if (!images || images.length === 0) return res.status(400).json({ message: "at least one image must be provided" });
 
     // validations
     switch (true) {
@@ -19,8 +19,8 @@ const addProduct = asyncHandler(async (req, res) => {
         return res.status(400).json({ error: "Meterage is required" });
       case !width:
         return res.status(400).json({ error: "width is required" });
-      case !description:
-        return res.status(400).json({ error: "description is required" });
+      // case !description:
+      //   return res.status(400).json({ error: "description is required" });
       case !category:
         return res.status(400).json({ error: "category is required" });
       case !price:
@@ -31,12 +31,12 @@ const addProduct = asyncHandler(async (req, res) => {
 
     const product = new Product({
       name,
-      images,
+      images: images || "",
       width,
       color,
       Meterage,
       threadType,
-      description,
+      description: description || "",
       price,
       category,
       store,
